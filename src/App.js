@@ -11,12 +11,27 @@ class BooksApp extends React.Component {
      * users can use the browser's back and forward buttons to navigate between
      * pages, as well as provide a good URL they can bookmark and share.
      */
-    showSearchPage: true
+    showSearchPage: false,
+    books: []
   };
 
   componentDidMount() {
     BooksAPI.getAll().then(books => this.setState(state => ({books})));
   }
+
+  handleMoveToShelf = (book, shelf) => {
+    BooksAPI.update(book, shelf)
+        .then(json => {
+            if ((json[shelf] || []).indexOf(book.id) !== -1) {
+                this.setState((state) => state.books.forEach(b => {
+                    if (b.id === book.id) {
+                        b.shelf = shelf;
+                    }
+                }));
+            }
+        });
+  };
+  
   render() {
     return (
       <div className="app">
@@ -39,9 +54,21 @@ class BooksApp extends React.Component {
             </div>
             <div className="list-books-content">
               <div>
-                <BookShelf name="Currently Reading" books={this.state.books.filter(book => book.shelf === 'currentlyReading')} />
-                <BookShelf name="Want to Read" books={this.state.books.filter(book => book.shelf === 'wantToRead')} />
-                <BookShelf name="Read" books={this.state.books.filter(book => book.shelf === 'read')} />
+                <BookShelf
+                    name="Currently Reading"
+                    books={this.state.books.filter(book => book.shelf === 'currentlyReading')}
+                    onMoveToShelf={this.handleMoveToShelf}
+                />
+                <BookShelf
+                    name="Want to Read"
+                    books={this.state.books.filter(book => book.shelf === 'wantToRead')}
+                    onMoveToShelf={this.handleMoveToShelf}
+                />
+                <BookShelf
+                    name="Read"
+                    books={this.state.books.filter(book => book.shelf === 'read')}
+                    onMoveToShelf={this.handleMoveToShelf}
+                />
               </div>
             </div>
             <div className="open-search">
