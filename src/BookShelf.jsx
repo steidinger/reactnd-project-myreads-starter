@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types';
+import BookSummary from './BookSummary';
 
 const BookShelf = ({books, name, onMoveToShelf}) => {
     return (
@@ -7,31 +8,15 @@ const BookShelf = ({books, name, onMoveToShelf}) => {
             <h2 className="bookshelf-title">{name}</h2>
             <div className="bookshelf-books">
                 <ol className="books-grid">
-                    {books.map(book => {
-                        const style = {
-                            width: 128,
-                            height: 193,
-                            backgroundImage: `url(${book.imageLinks.thumbnail}`
-                        };
-                        return <li key={book.id}>
-                            <div className="book">
-                                <div className="book-top">
-                                    <div className="book-cover" style={style}></div>
-                                    <div className="book-shelf-changer">
-                                        <select onChange={(event) => onMoveToShelf(book, event.target.value)} value={book.shelf}>
-                                            <option value="none" disabled>Move to...</option>
-                                            <option value="currentlyReading">Currently Reading</option>
-                                            <option value="wantToRead">Want to Read</option>
-                                            <option value="read">Read</option>
-                                            <option value="none">None</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className="book-title">{book.title}</div>
-                                <div className="book-authors">{book.authors.join(", ")}</div>
-                            </div>
-                        </li>
-                    })}
+                    {books.map(book => (
+                        <BookSummary
+                            key={book.id}
+                            title={book.title}
+                            authors={book.authors}
+                            shelf={book.shelf}
+                            coverUrl={book.imageLinks.thumbnail}
+                            onSelectShelf={(shelf) => onMoveToShelf(book, shelf)}
+                        />))}
                 </ol>
             </div>
         </div>
