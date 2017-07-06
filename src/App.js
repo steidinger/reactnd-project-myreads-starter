@@ -1,4 +1,6 @@
 import React from 'react'
+import {BrowserRouter, Link} from 'react-router-dom';
+import {Route, Switch} from 'react-router';
 import * as BooksAPI from './BooksAPI'
 import './App.css'
 import BookShelf from './BookShelf';
@@ -6,13 +8,6 @@ import Search from './Search';
 
 class BooksApp extends React.Component {
   state = {
-    /**
-     * TODO: Instead of using this state variable to keep track of which page
-     * we're on, use the URL in the browser's address bar. This will ensure that
-     * users can use the browser's back and forward buttons to navigate between
-     * pages, as well as provide a good URL they can bookmark and share.
-     */
-    showSearchPage: false,
     books: []
   };
 
@@ -44,45 +39,46 @@ class BooksApp extends React.Component {
             });
     };
 
-  handleSearchClosed = () => {
-      this.setState({showSearchPage: false});
-  };
-
   render() {
     return (
-      <div className="app">
-        {this.state.showSearchPage ? (
-            <Search onClose={this.handleSearchClosed} onBookShelved={this.handleBookShelved}/>
-        ) : (
-          <div className="list-books">
-            <div className="list-books-title">
-              <h1>MyReads</h1>
+        <BrowserRouter>
+            <div className="app">
+                <Switch>
+                    <Route path='/search'>
+                        <Search onBookShelved={this.handleBookShelved}/>
+                    </Route>
+                    <Route path='/'>
+                    <div className="list-books">
+                        <div className="list-books-title">
+                            <h1>MyReads</h1>
+                        </div>
+                        <div className="list-books-content">
+                            <div>
+                                <BookShelf
+                                    name="Currently Reading"
+                                    books={this.state.books.filter(book => book.shelf === 'currentlyReading')}
+                                    onMoveToShelf={this.handleBookShelved}
+                                />
+                                <BookShelf
+                                    name="Want to Read"
+                                    books={this.state.books.filter(book => book.shelf === 'wantToRead')}
+                                    onMoveToShelf={this.handleBookShelved}
+                                />
+                                <BookShelf
+                                    name="Read"
+                                    books={this.state.books.filter(book => book.shelf === 'read')}
+                                    onMoveToShelf={this.handleBookShelved}
+                                />
+                            </div>
+                        </div>
+                        <div className="open-search">
+                            <Link to='/search'>Add a book</Link>
+                        </div>
+                    </div>
+                    </Route>
+                </Switch>
             </div>
-            <div className="list-books-content">
-              <div>
-                <BookShelf
-                    name="Currently Reading"
-                    books={this.state.books.filter(book => book.shelf === 'currentlyReading')}
-                    onMoveToShelf={this.handleBookShelved}
-                />
-                <BookShelf
-                    name="Want to Read"
-                    books={this.state.books.filter(book => book.shelf === 'wantToRead')}
-                    onMoveToShelf={this.handleBookShelved}
-                />
-                <BookShelf
-                    name="Read"
-                    books={this.state.books.filter(book => book.shelf === 'read')}
-                    onMoveToShelf={this.handleBookShelved}
-                />
-              </div>
-            </div>
-            <div className="open-search">
-              <a onClick={() => this.setState({ showSearchPage: true })}>Add a book</a>
-            </div>
-          </div>
-        )}
-      </div>
+        </BrowserRouter>
     )
   }
 }

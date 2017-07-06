@@ -1,4 +1,5 @@
 import React from 'react';
+import {Link} from 'react-router-dom';
 import PropTypes from 'prop-types';
 import * as BooksAPI from './BooksAPI';
 import BookSummary from './BookSummary';
@@ -7,7 +8,6 @@ const getThumbnail = (book) => (book.imageLinks ? book.imageLinks.thumbnail : un
 
 class Search extends React.Component {
     static propTypes = {
-        onClose: PropTypes.func.isRequired,
         onBookShelved: PropTypes.func.isRequired,
         maxResults: PropTypes.number
     };
@@ -44,13 +44,12 @@ class Search extends React.Component {
     };
 
     render() {
-        const {onClose} = this.props;
         const {query, searchResults} = this.state;
 
         return (
             <div className="search-books">
                 <div className="search-books-bar">
-                    <a className="close-search" onClick={() => onClose()}>Close</a>
+                    <Link to='/' className="close-search">Close</Link>
                     <div className="search-books-input-wrapper">
                         <input
                             type="text"
