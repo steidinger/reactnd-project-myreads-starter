@@ -3,18 +3,10 @@ import PropTypes from 'prop-types';
 import BookShelfChanger from './BookShelfChanger';
 
 const BookSummary = ({title, authors, shelf, coverUrl, onSelectShelf}) => {
-    const style = {
-        width: 140,
-        height: 200,
-        backgroundImage: `url(${coverUrl}`,
-        backgroundRepeat: 'no-repeat',
-        backgroundSize: 'contain',
-        backgroundPosition: 'center'
-    };
     return <li>
         <div className="book">
             <div className="book-top">
-                <div className="book-cover" style={style}></div>
+                <div className="book-cover" style={{backgroundImage: `url(${coverUrl}`}}></div>
                 <BookShelfChanger
                     currentShelf={shelf}
                     onSelect={onSelectShelf}
