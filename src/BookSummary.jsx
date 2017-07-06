@@ -30,7 +30,8 @@ BookSummary.propTypes = {
     title: PropTypes.string.isRequired,
     authors: PropTypes.array.isRequired,
     shelf: PropTypes.string.isRequired,
-    coverUrl: PropTypes.string.isRequired
+    coverUrl: PropTypes.string.isRequired,
+    onSelectShelf: PropTypes.func.isRequired
 };
 
 export default BookSummary;

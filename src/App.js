@@ -2,6 +2,7 @@ import React from 'react'
 import * as BooksAPI from './BooksAPI'
 import './App.css'
 import BookShelf from './BookShelf';
+import Search from './Search';
 
 class BooksApp extends React.Component {
   state = {
@@ -16,37 +17,42 @@ class BooksApp extends React.Component {
   };
 
   componentDidMount() {
-    BooksAPI.getAll().then(books => this.setState(state => ({books})));
+    this.loadBooks();
   }
 
-  handleMoveToShelf = (book, shelf) => {
-    BooksAPI.update(book, shelf)
-        .then(json => {
-            if ((json[shelf] || []).indexOf(book.id) !== -1) {
-                this.setState((state) => state.books.forEach(b => {
-                    if (b.id === book.id) {
-                        b.shelf = shelf;
-                    }
-                }));
-            }
-        });
+  loadBooks = () => {
+      BooksAPI.getAll().then(books => this.setState(state => ({books})));
   };
-  
+
+    handleBookShelved = (book, shelf) => {
+        let bookIsVisible = this.state.books.find(b => b.id === book.id);
+        BooksAPI.update(book, shelf)
+            .then(json => {
+                if (bookIsVisible) {
+                    if ((json[shelf] || []).indexOf(book.id) !== -1) {
+                        this.setState((state) => state.books.forEach(b => {
+                            if (b.id === book.id) {
+                                b.shelf = shelf;
+                            }
+                        }));
+                    }
+                    this.setState(state => state.books.filter(book => book.shelf !== 'none'));
+                }
+                else {
+                    this.loadBooks();
+                }
+            });
+    };
+
+  handleSearchClosed = () => {
+      this.setState({showSearchPage: false});
+  };
+
   render() {
     return (
       <div className="app">
         {this.state.showSearchPage ? (
-          <div className="search-books">
-            <div className="search-books-bar">
-              <a className="close-search" onClick={() => this.setState({ showSearchPage: false })}>Close</a>
-              <div className="search-books-input-wrapper">
-                <input type="text" placeholder="Search by title or author"/>
-              </div>
-            </div>
-            <div className="search-books-results">
-              <ol className="books-grid"></ol>
-            </div>
-          </div>
+            <Search onClose={this.handleSearchClosed} onBookShelved={this.handleBookShelved}/>
         ) : (
           <div className="list-books">
             <div className="list-books-title">
@@ -57,17 +63,17 @@ class BooksApp extends React.Component {
                 <BookShelf
                     name="Currently Reading"
                     books={this.state.books.filter(book => book.shelf === 'currentlyReading')}
-                    onMoveToShelf={this.handleMoveToShelf}
+                    onMoveToShelf={this.handleBookShelved}
                 />
                 <BookShelf
                     name="Want to Read"
                     books={this.state.books.filter(book => book.shelf === 'wantToRead')}
-                    onMoveToShelf={this.handleMoveToShelf}
+                    onMoveToShelf={this.handleBookShelved}
                 />
                 <BookShelf
                     name="Read"
                     books={this.state.books.filter(book => book.shelf === 'read')}
-                    onMoveToShelf={this.handleMoveToShelf}
+                    onMoveToShelf={this.handleBookShelved}
                 />
               </div>
             </div>
