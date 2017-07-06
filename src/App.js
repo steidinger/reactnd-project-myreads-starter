@@ -7,17 +7,17 @@ import BookShelf from './BookShelf';
 import Search from './Search';
 
 class BooksApp extends React.Component {
-  state = {
-    books: []
-  };
+    state = {
+        books: []
+    };
 
-  componentDidMount() {
-    this.loadBooks();
-  }
+    componentDidMount() {
+        this.loadBooks();
+    }
 
-  loadBooks = () => {
-      BooksAPI.getAll().then(books => this.setState(state => ({books})));
-  };
+    loadBooks = () => {
+        BooksAPI.getAll().then(books => this.setState(state => ({books})));
+    };
 
     handleBookShelved = (book, shelf) => {
         let bookIsVisible = this.state.books.find(b => b.id === book.id);
@@ -39,48 +39,48 @@ class BooksApp extends React.Component {
             });
     };
 
-  render() {
-    return (
-        <BrowserRouter>
-            <div className="app">
-                <Switch>
-                    <Route path='/search'>
-                        <Search onBookShelved={this.handleBookShelved} shelvedBooks={this.state.books}/>
-                    </Route>
-                    <Route path='/'>
-                    <div className="list-books">
-                        <div className="list-books-title">
-                            <h1>MyReads</h1>
-                        </div>
-                        <div className="list-books-content">
-                            <div>
-                                <BookShelf
-                                    name="Currently Reading"
-                                    books={this.state.books.filter(book => book.shelf === 'currentlyReading')}
-                                    onMoveToShelf={this.handleBookShelved}
-                                />
-                                <BookShelf
-                                    name="Want to Read"
-                                    books={this.state.books.filter(book => book.shelf === 'wantToRead')}
-                                    onMoveToShelf={this.handleBookShelved}
-                                />
-                                <BookShelf
-                                    name="Read"
-                                    books={this.state.books.filter(book => book.shelf === 'read')}
-                                    onMoveToShelf={this.handleBookShelved}
-                                />
+    render() {
+        return (
+            <BrowserRouter>
+                <div className="app">
+                    <Switch>
+                        <Route path='/search'>
+                            <Search onBookShelved={this.handleBookShelved} shelvedBooks={this.state.books}/>
+                        </Route>
+                        <Route path='/'>
+                            <div className="list-books">
+                                <div className="list-books-title">
+                                    <h1>MyReads</h1>
+                                </div>
+                                <div className="list-books-content">
+                                    <div>
+                                        <BookShelf
+                                            name="Currently Reading"
+                                            books={this.state.books.filter(book => book.shelf === 'currentlyReading')}
+                                            onMoveToShelf={this.handleBookShelved}
+                                        />
+                                        <BookShelf
+                                            name="Want to Read"
+                                            books={this.state.books.filter(book => book.shelf === 'wantToRead')}
+                                            onMoveToShelf={this.handleBookShelved}
+                                        />
+                                        <BookShelf
+                                            name="Read"
+                                            books={this.state.books.filter(book => book.shelf === 'read')}
+                                            onMoveToShelf={this.handleBookShelved}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="open-search">
+                                    <Link to='/search'>Add a book</Link>
+                                </div>
                             </div>
-                        </div>
-                        <div className="open-search">
-                            <Link to='/search'>Add a book</Link>
-                        </div>
-                    </div>
-                    </Route>
-                </Switch>
-            </div>
-        </BrowserRouter>
-    )
-  }
+                        </Route>
+                    </Switch>
+                </div>
+            </BrowserRouter>
+        )
+    }
 }
 
 export default BooksApp

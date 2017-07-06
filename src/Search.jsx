@@ -25,7 +25,7 @@ class Search extends React.Component {
             return cache
         }, {});
     }
-    
+
     handleQueryChanged = (query) => {
         this.setState({query});
         if (query !== '') {
