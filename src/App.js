@@ -45,7 +45,7 @@ class BooksApp extends React.Component {
             <div className="app">
                 <Switch>
                     <Route path='/search'>
-                        <Search onBookShelved={this.handleBookShelved}/>
+                        <Search onBookShelved={this.handleBookShelved} shelvedBooks={this.state.books}/>
                     </Route>
                     <Route path='/'>
                     <div className="list-books">

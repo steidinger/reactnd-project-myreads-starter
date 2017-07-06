@@ -8,6 +8,7 @@ const getThumbnail = (book) => (book.imageLinks ? book.imageLinks.thumbnail : un
 
 class Search extends React.Component {
     static propTypes = {
+        shelvedBooks: PropTypes.array.isRequired,
         onBookShelved: PropTypes.func.isRequired,
         maxResults: PropTypes.number
     };
@@ -17,6 +18,14 @@ class Search extends React.Component {
         query: ''
     };
 
+    constructor(props) {
+        super(props);
+        this.shelvedBooks = props.shelvedBooks.reduce((cache, b) => {
+            cache[b.id] = b.shelf;
+            return cache
+        }, {});
+    }
+    
     handleQueryChanged = (query) => {
         this.setState({query});
         if (query !== '') {
@@ -26,7 +35,7 @@ class Search extends React.Component {
                         this.setState({searchResults: []});
                     }
                     else {
-                        this.setState({searchResults: books});
+                        this.setState({searchResults: books.map(b => Object.assign(b, {shelf: this.shelvedBooks[b.id] || 'none'}))});
                     }
                 });
         }
