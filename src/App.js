@@ -1,14 +1,16 @@
 import React from 'react'
-import {BrowserRouter, Link} from 'react-router-dom';
+import {BrowserRouter} from 'react-router-dom';
 import {Route, Switch} from 'react-router';
 import * as BooksAPI from './BooksAPI'
 import './App.css'
-import BookShelf from './BookShelf';
+import BookShelves from './BookShelves';
 import Search from './Search';
 
 class BooksApp extends React.Component {
     state = {
-        books: []
+        books: [],
+        query: '',
+        searchResults: []
     };
 
     componentDidMount() {
@@ -19,19 +21,43 @@ class BooksApp extends React.Component {
         BooksAPI.getAll().then(books => this.setState(state => ({books})));
     };
 
+    findShelf = ({id}) => (this.state.books.find(book => book.id === id) || {shelf: 'none'}).shelf;
+
+    handleQueryChanged = (query) => {
+        this.setState({query});
+        if (query !== '') {
+            BooksAPI.search(query, 20)
+                .then(books => {
+                    if (books.error) {
+                        this.setState({searchResults: []});
+                    }
+                    else {
+                        this.setState({searchResults: books.map(b => ({shelf: this.findShelf(b), ...b}))});
+                    }
+                });
+        }
+        else {
+            this.setState({searchResults: []});
+        }
+    };
+
     handleBookShelved = (book, shelf) => {
         let bookIsVisible = this.state.books.find(b => b.id === book.id);
         BooksAPI.update(book, shelf)
             .then(json => {
                 if (bookIsVisible) {
-                    if ((json[shelf] || []).indexOf(book.id) !== -1) {
+                    let wasUpdated = (json[shelf] || []).indexOf(book.id) !== -1;
+                    if (wasUpdated) {
                         this.setState((state) => state.books.forEach(b => {
                             if (b.id === book.id) {
                                 b.shelf = shelf;
                             }
                         }));
                     }
-                    this.setState(state => state.books.filter(book => book.shelf !== 'none'));
+                    this.setState(state => ({
+                        books: state.books.filter(book => book.shelf !== 'none'),
+                        searchResults: state.searchResults.map(b => wasUpdated && b.id === book.id ? {shelf, ...book} : book)
+                    }));
                 }
                 else {
                     this.loadBooks();
@@ -45,36 +71,14 @@ class BooksApp extends React.Component {
                 <div className="app">
                     <Switch>
                         <Route path='/search'>
-                            <Search onBookShelved={this.handleBookShelved} shelvedBooks={this.state.books}/>
+                            <Search
+                                onBookShelved={this.handleBookShelved}
+                                onQueryChanged={this.handleQueryChanged}
+                                query={this.state.query}
+                                searchResults={this.state.searchResults}/>
                         </Route>
                         <Route path='/'>
-                            <div className="list-books">
-                                <div className="list-books-title">
-                                    <h1>MyReads</h1>
-                                </div>
-                                <div className="list-books-content">
-                                    <div>
-                                        <BookShelf
-                                            name="Currently Reading"
-                                            books={this.state.books.filter(book => book.shelf === 'currentlyReading')}
-                                            onMoveToShelf={this.handleBookShelved}
-                                        />
-                                        <BookShelf
-                                            name="Want to Read"
-                                            books={this.state.books.filter(book => book.shelf === 'wantToRead')}
-                                            onMoveToShelf={this.handleBookShelved}
-                                        />
-                                        <BookShelf
-                                            name="Read"
-                                            books={this.state.books.filter(book => book.shelf === 'read')}
-                                            onMoveToShelf={this.handleBookShelved}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="open-search">
-                                    <Link to='/search'>Add a book</Link>
-                                </div>
-                            </div>
+                            <BookShelves books={this.state.books} onMoveToShelf={this.handleBookShelved} />
                         </Route>
                     </Switch>
                 </div>
