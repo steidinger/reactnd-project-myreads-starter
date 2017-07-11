@@ -4,6 +4,7 @@ import {Route, Switch} from 'react-router';
 import * as BooksAPI from './BooksAPI'
 import './App.css'
 import BookShelves from './BookShelves';
+import BookDetails from './BookDetails';
 import Search from './Search';
 
 class BooksApp extends React.Component {
@@ -65,6 +66,8 @@ class BooksApp extends React.Component {
             });
     };
 
+    clearSearch = () => this.setState({query: '', searchResults: []});
+
     render() {
         return (
             <BrowserRouter>
@@ -77,8 +80,9 @@ class BooksApp extends React.Component {
                                 query={this.state.query}
                                 searchResults={this.state.searchResults}/>
                         </Route>
+                        <Route path='/book/:id' render={({match}) => <BookDetails id={match.params.id} back={this.state.query ? '/search' : '/'}/>} />
                         <Route path='/'>
-                            <BookShelves books={this.state.books} onMoveToShelf={this.handleBookShelved} />
+                            <BookShelves books={this.state.books} onInit={this.clearSearch} onMoveToShelf={this.handleBookShelved} />
                         </Route>
                     </Switch>
                 </div>

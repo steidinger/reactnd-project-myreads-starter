@@ -1,12 +1,15 @@
 import React from 'react'
+import {Link} from 'react-router-dom';
 import PropTypes from 'prop-types';
 import BookShelfChanger from './BookShelfChanger';
 
-const BookSummary = ({title, authors, shelf, coverUrl, onSelectShelf}) => {
+const BookSummary = ({id, title, authors, shelf, coverUrl, onSelectShelf}) => {
     return <li>
         <div className="book">
             <div className="book-top">
+                <Link to={`/book/${id}`}>
                 <div className="book-cover" style={{backgroundImage: `url(${coverUrl}`}}></div>
+                </Link>
                 <BookShelfChanger
                     currentShelf={shelf}
                     onSelect={onSelectShelf}
@@ -19,6 +22,7 @@ const BookSummary = ({title, authors, shelf, coverUrl, onSelectShelf}) => {
 };
 
 BookSummary.propTypes = {
+    id: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     authors: PropTypes.array.isRequired,
     shelf: PropTypes.string.isRequired,

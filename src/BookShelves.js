@@ -10,35 +10,48 @@ const shelves = [
     {label: 'Read', value: 'read'}
 ];
 
-const BookShelves = ({books, onMoveToShelf}) => {
-    return (
-        <div className="list-books">
-            <div className="list-books-title">
-                <h1>MyReads</h1>
-            </div>
-            <div className="list-books-content">
-                <div>
-                    {shelves.map(({label, value}) => (
-                        <BookShelf
-                            key={value}
-                            name={label}
-                            books={books.filter(book => book.shelf === value)}
-                            onMoveToShelf={onMoveToShelf}
-                        />
-                    ))}
+class BookShelves extends React.Component {
+
+    componentDidMount() {
+        this.props.onInit();
+    }
+
+    render() {
+        let {onMoveToShelf, books} = this.props;
+        return (
+            <div className="list-books">
+                <div className="list-books-title">
+                    <h1>MyReads</h1>
+                </div>
+                <div className="list-books-content">
+                    <div>
+                        {shelves.map(({label, value}) => (
+                            <BookShelf
+                                key={value}
+                                name={label}
+                                books={books.filter(book => book.shelf === value)}
+                                onMoveToShelf={onMoveToShelf}
+                            />
+                        ))}
+                    </div>
+                </div>
+                <div className="open-search">
+                    <Link to='/search'>Add a book</Link>
                 </div>
             </div>
-            <div className="open-search">
-                <Link to='/search'>Add a book</Link>
-            </div>
-        </div>
 
-    )
-};
+        )
+    }
+}
 
 BookShelves.propTypes = {
     books: PropTypes.array.isRequired,
-    onMoveToShelf: PropTypes.func.isRequired
+    onMoveToShelf: PropTypes.func.isRequired,
+    onInit: PropTypes.func
+};
+
+BookShelves.defaultProps = {
+    onInit: () => {}
 };
 
 export default BookShelves;

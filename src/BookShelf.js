@@ -11,6 +11,7 @@ const BookShelf = ({books, name, onMoveToShelf}) => {
                     {books.map(book => (
                         <BookSummary
                             key={book.id}
+                            id={book.id}
                             title={book.title}
                             authors={book.authors}
                             shelf={book.shelf}
